@@ -3,5 +3,5 @@ Makefile.PL
 MANIFEST
 README
 t/SMcli.t
-lib/SMcli.pm
+lib/SANtricity/SMcli.pm
 META.yml                                 Module meta-data (added by MakeMaker)

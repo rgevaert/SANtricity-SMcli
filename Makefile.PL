@@ -4,9 +4,9 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     NAME              => 'SANtricity::SMcli',
-    VERSION_FROM      => 'lib/SMcli.pm', # finds $VERSION
+    VERSION_FROM      => 'lib/SANtricity/SMcli.pm', # finds $VERSION
     PREREQ_PM         => {}, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
-      (ABSTRACT_FROM  => 'lib/SMcli.pm', # retrieve abstract from module
+      (ABSTRACT_FROM  => 'lib/SANtricity/SMcli.pm', # retrieve abstract from module
        AUTHOR         => 'Rich Bishop <rjb@cpan.org>') : ()),
 );

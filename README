@@ -1,5 +1,5 @@
-SMcli version 0.01
-==================
+SANtricity::SMcli version 0.02
+==============================
 
 A simple perl interface to Engenio's SANtricity CLI to enable the monitoring
 and management of SAN devices. The following methods are currently provided:

@@ -1,5 +1,5 @@
-# $Id: SMcli.pm,v 1.6 2004/12/14 19:42:23 rbishop Exp $
 package SANtricity::SMcli;
+# $Id: SMcli.pm,v 1.6 2004/12/14 19:42:23 rbishop Exp $
 
 use 5.008005;
 use strict;
@@ -27,7 +27,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 # Preloaded methods go here.
@@ -382,9 +382,9 @@ Command Line
 
 =head1 SYNOPSIS
 
-  use SMcli;
+  use SANtricity::SMcli;
 
-  my $array = SMcli->new(array => "MyArray");
+  my $array = SANtricity::SMcli->new(array => "MyArray");
 
   # Check array status
   my $status = $array->arrayStatus;
@@ -420,7 +420,7 @@ Command Line
 
 =head1 DESCRIPTION
 
-SMcli is a perl interface to Engenio's SMcli. It has been developed
+SANtricity::SMcli is a perl interface to Engenio's SMcli. It has been developed
 with Santricity version 9.1 on Linux - it will probably work on any
 Unix system (and maybe windows), but some functions probably won't
 work with other versions of Santricity due to syntax changes. It
@@ -435,8 +435,8 @@ me but there's no guarantee.
 =head2 CONSTRUCTOR
 
 new(array => 'ARRAYNAME', OPTIONS)
-    Creates a new SMcli object. ARRAYNAME is the name of the storage
-    array (SMcli -d shows all defined arrays).
+    Creates a new SANtricity::SMcli object. ARRAYNAME is the name of 
+    the storage array (SMcli -d shows all defined arrays).
 
     OPTIONS can be:
 
