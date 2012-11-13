@@ -26,7 +26,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 # Preloaded methods go here.
@@ -52,10 +52,10 @@ sub new {
 sub healthStatus {
   my $self = shift;
 
-  my @output = $self->runCmd('show storageSubsystem healthStatus');
+  my @output = $self->runCmd('show storageArray healthStatus');
   foreach my $line (@output) {
-    #if ($line =~ /^Storage Subsystem health status = (.+)\.$/) {
-    if ($line =~ /^Storage Subsystem health status = optimal\.$/) {
+    #if ($line =~ /^Storage array health status = (.+)\.$/) {
+    if ($line =~ /^Storage array health status = optimal\.$/) {
       return 0;
    }
   }
@@ -76,7 +76,7 @@ sub reportStatus{
   my $status;
   my $location;
   my $counter=0;
-  my @health=$self->runCmd('show storageSubsystem healthStatus');
+  my @health=$self->runCmd('show storageArray healthStatus');
   foreach my $line (@health) {
 	chomp $line;
         if ( $line =~ /Component reporting problem:\s+(.+)/ ) {
@@ -101,20 +101,20 @@ sub reportStatus{
 
 
 ##########################################################
-# Method: showLogicalDrive
+# Method: showVirtualDisk
 #                                                        #
 # Gets information on a logical drive                    #
 # Args: logical drive to check                           #
 #                                                        #
 # Returns: Hash ref with all volume information returned #
 ##########################################################
-sub showLogicalDrive {
+sub showVirtualDisk {
   my $self = shift;
 
   my $logicaldrive=shift;
   $logicaldrive=cleanInput($logicaldrive);
   my %results;
-  foreach my $line ($self->runCmd("show logicaldrives [\"$logicaldrive\"]")) {
+  foreach my $line ($self->runCmd("show virtualDisk [\"$logicaldrive\"]")) {
     next if ($line =~ /^$/ || $line =~ /^ *$/ || $line =~ /^VOLUME DETAILS$/);
     my ($key,$value)= $line =~ /^\s+([^:]+): +(.*)$/;
     next unless defined($key);
@@ -128,19 +128,19 @@ sub showLogicalDrive {
 }
 
 ##########################################################
-# Method: showAllLogicalDrives
+# Method: showAllVirtualDisks
 #                                                        #
 # Gets information on all logical drives                 #
 #                                                        #
 # Returns: Hash ref with all volume information returned #
 ##########################################################
-sub showAllLogicalDrives {
+sub showAllVirtualDisks {
   my $self = shift;
 
   # hash with hashes
   my %results;
   my $drive = "";
-  foreach my $line ($self->runCmd("show alllogicaldrives")) {
+  foreach my $line ($self->runCmd("show allVirtualDisks")) {
     next if ($line =~ /^$/
 	|| $line =~ /^ *$/
 	|| $line =~ /^VOLUME DETAILS$/
@@ -163,13 +163,15 @@ sub showAllLogicalDrives {
 }
 
 ##########################################################
-# Method: createLogicalDrive
+# Method: createVirtualDisk
 #                                                        #
 # Create a logical drive                                 #
 #                                                        #
 # Returns: Hash ref with all volume information returned #
 ##########################################################
-sub createLogicalDrive {
+# Example syntax:
+# create virtualDisk diskGroup=0 raidLevel=6 userLabel="vdisk1" capacity=558.411GB;
+sub createVirtualDisk {
   my $self = shift;
 
   my @args=@_;
@@ -178,7 +180,7 @@ sub createLogicalDrive {
     {
         $cmd .= " " .quoteArgument(${args}[$i] . "=" . ${args}[$i+1]);
     }
-  $cmd="create logicalDrive $cmd";
+  $cmd="create virtualDisk $cmd";
 
   foreach my $line ($self->runCmd("$cmd")) {
     next if ($line =~ /^$/
@@ -194,18 +196,18 @@ sub createLogicalDrive {
 }
 
 ##########################################################
-# Method: deleteLogicalDrive                             #
+# Method: deleteVirtualDisk                             #
 #                                                        #
 # Delete a logical drive                                 #
 # Args: logical drive name                               #
 #                                                        #
 # Returns: 0 on failure, 1 on success                    #
 ##########################################################
-sub deleteLogicalDrive {
+sub deleteVirtualDisk {
   my $self = shift;
 
   my $logical_drive = shift;
-  my $cmd="delete logicalDrive [\"$logical_drive\"]";
+  my $cmd="delete virtualDisk [\"$logical_drive\"]";
 
   my $status = 1;
   foreach my $line ($self->runCmd("$cmd")) {
@@ -216,21 +218,21 @@ sub deleteLogicalDrive {
 }
 
 ##########################################################
-# Method: addLogicalDriveMapping
+# Method: addVirtualDiskMapping
 #                                                        #
 # Add a logical drive mapping                            #
 # Args: logical drive name, logical unit number, host    #
 #                                                        #
 # Returns: 1 if add succeeded                            #
 ##########################################################
-sub addLogicalDriveMapping {
+sub addVirtualDiskMapping {
   my $self = shift;
 
   my $logical_drive = shift;
   my $logical_unit_number = shift;
   my $host = shift;
 
-  my $cmd="set logicalDrive [\"$logical_drive\"] logicalUnitnumber=$logical_unit_number host=\"$host\"";
+  my $cmd="set virtualDisk [\"$logical_drive\"] logicalUnitnumber=$logical_unit_number host=\"$host\"";
 
   my $status = 1;
   foreach my $line ($self->runCmd("$cmd")) {
@@ -242,20 +244,20 @@ sub addLogicalDriveMapping {
 }
 
 ##########################################################
-# Method: removeLogicalDriveMapping
+# Method: removeVirtualDiskMapping
 #                                                        #
 # Remove a logical drive mapping                         #
 # Args: logical drive name, logical unit number, host    #
 #                                                        #
 # Returns: 1 if add succeeded                            #
 ##########################################################
-sub removeLogicalDriveMapping {
+sub removeVirtualDiskMapping {
   my $self = shift;
 
   my $logical_drive = shift;
   my $host = shift;
 
-  my $cmd="remove logicalDrive [\"$logical_drive\"] lunMapping host=\"$host\"";
+  my $cmd="remove virtualDisk [\"$logical_drive\"] lunMapping host=\"$host\"";
 
   my $status = 1;
   foreach my $line ($self->runCmd("$cmd")) {
@@ -267,26 +269,26 @@ sub removeLogicalDriveMapping {
 }
 
 ##########################################################
-# Method: showLogicalDriveMappings                       #
+# Method: showVirtualDiskMappings                       #
 #                                                        #
 # Show logical drive mapping of a host                   #
 # Args: logical drive name, logical unit number, host    #
 #                                                        #
 # Returns: 1 if add succeeded                            #
 ##########################################################
-sub showLogicalDriveMappings {
+sub showVirtualDiskMappings {
   my $self = shift;
 
   my $host = shift;
 
-  my $cmd="show storageSubsystem lunMappings host [\"$host\"]";
+  my $cmd="show storageArray lunMappings host [\"$host\"]";
 
   my @mappings;
   foreach my $line ($self->runCmd("$cmd")) {
     next if ($line =~ /^$/);
     next if ($line =~ /^MAPPINGS/);
-    next if ($line =~ /Logical Drive Name/);
-    next if ($line =~ /Access Logical Drive/);
+    next if ($line =~ /Virtual Disk Name/);
+    next if ($line =~ /Access Virtual Disk/);
     return 0 if $line =~ /SMcli failed/;
     my %map;
     ($map{'logicaldrive'}, $map{'lunnr'}, $map{'controller'}, $map{'access'}, $map{'status'}) = $line =~ /^\s+([\w\-]+)\s+(\d+)\s+([\w,]+)\s+(\w+ \w+)\s+(\w+)/;
@@ -305,32 +307,32 @@ sub showLogicalDriveMappings {
 ##                                 summary => 1                  #
 ## Returns: Array reference containing command output            #
 ##################################################################
-#sub showController {
-#  my $self = shift;
-#
-#  my %args=@_;
-#  my $cmd;
-#  if (%args) {
-#    if ($args{controller}) {
-#      $cmd = " controller [ ". cleanInput($args{controller}) ." ]";
-#    } else {
-#      $cmd = " allControllers";
-#    }
-#    $cmd .= " summary" if ($args{summary});
-#  } else {
-#    $cmd = " allControllers";
-#  }
-#
-#  my @output = $self->runCmd("show $cmd");
-#  foreach my $line (@output) {
-#    if ($line =~ /^Storage array health status = (.+)\.$/) {
-#      return 0;
-#    }
-#  }
-#  return \@output;
-#}
-#
-#
+sub showController {
+  my $self = shift;
+
+  my %args=@_;
+  my $cmd;
+  if (%args) {
+    if ($args{controller}) {
+      $cmd = " controller [ ". cleanInput($args{controller}) ." ]";
+    } else {
+      $cmd = " allControllers";
+    }
+    $cmd .= " summary" if ($args{summary});
+  } else {
+    $cmd = " allControllers";
+  }
+
+  my @output = $self->runCmd("show $cmd");
+  foreach my $line (@output) {
+    if ($line =~ /^Storage array health status = (.+)\.$/) {
+      return 0;
+    }
+  }
+  return \@output;
+}
+
+
 ###################################################################################################
 ## Method: getEvents                                                                              #
 ##                                                                                                #
@@ -339,24 +341,24 @@ sub showLogicalDriveMappings {
 ##                                  count:     number of events to get (don't specify to get all) #
 ## Returns: File::Temp object of the tempfile containing the event log                            #
 ###################################################################################################
-#sub getEvents {
-#  my $self = shift;
-#
-#  my %args = @_;
-#  my $type = defined $args{eventType} ? cleanInput($args{eventType}) : "all";
-#  my $count = defined $args{count} ? "count=". cleanInput($args{count}) : '';
-#  my $file = new File::Temp;
-#  my $cmd = "save storageArray ${type}Events file=\"". $file->filename ."\" $count";
-#  foreach my $line ($self->runCmd($cmd)) {
-#    next if ($line =~ /^$/);
-#    warn "Unexpected output in downloading events on Array $self->{array}";
-#    return 0;
-#  }
-#  return $file;
-#}
-#
-#
-#
+sub getEvents {
+  my $self = shift;
+
+  my %args = @_;
+  my $type = defined $args{eventType} ? cleanInput($args{eventType}) : "all";
+  my $count = defined $args{count} ? "count=". cleanInput($args{count}) : '';
+  my $file = new File::Temp;
+  my $cmd = "save storageArray ${type}Events file=\"". $file->filename ."\" $count";
+  foreach my $line ($self->runCmd($cmd)) {
+    next if ($line =~ /^$/);
+    warn "Unexpected output in downloading events on Array $self->{array}";
+    return 0;
+  }
+  return $file;
+}
+
+
+
 ###################################################################################################
 ## Method: getConfig                                                                              #
 ##                                                                                                #
@@ -366,34 +368,34 @@ sub showLogicalDriveMappings {
 ##                                                                                                #
 ## Returns: File::Temp object of the tempfile containing the event log                            #
 ###################################################################################################
-#sub getConfig {
-#  my $self = shift;
-#
-#  my %args = @_;
-#  my $opts;
-#
-#  if (%args) {
-#    foreach my $option qw(globalSettings volumeConfigAndSettings hostTopology lunMappings) {
-#      $opts .= " $option=";
-#      $opts .= $args{$option} ? "TRUE" : "FALSE";
-#    }
-#  } else {
-#    $opts=" allConfig";
-#  }
-#
-#  my $file = new File::Temp;
-#  my $cmd = "save storageArray configuration file=\"". $file->filename ."\" $opts";
-#  foreach my $line ($self->runCmd($cmd)) {
-#    next if ($line =~ /^$/);
-#    warn "Unexpected output in downloading configuration on Array $self->{array}";
-#    return 0;
-#  }
-#  return $file;
-#}
-#
-#
-#
-#
+sub getConfig {
+  my $self = shift;
+
+  my %args = @_;
+  my $opts;
+
+  if (%args) {
+    foreach my $option (qw/globalSettings volumeConfigAndSettings hostTopology lunMappings/) {
+      $opts .= " $option=";
+      $opts .= $args{$option} ? "TRUE" : "FALSE";
+    }
+  } else {
+    $opts=" allConfig";
+  }
+
+  my $file = new File::Temp;
+  my $cmd = "save storageArray configuration file=\"". $file->filename ."\" $opts";
+  foreach my $line ($self->runCmd($cmd)) {
+    next if ($line =~ /^$/);
+    warn "Unexpected output in downloading configuration on Array $self->{array}";
+    return 0;
+  }
+  return $file;
+}
+
+
+
+
 ##########################################################################################
 ## Method: monitorPerformance                                                            #
 ##                                                                                       #
@@ -426,11 +428,11 @@ sub monitorPerformance {
   }
   return $file;
 }
-#
-#
-#
-#
-#
+
+
+
+
+
 ######################################
 ## Method: stopSnap                  #
 ##                                   #
@@ -632,8 +634,8 @@ Command Line
 =head1 DESCRIPTION
 
 SANtricity::SMcli is a perl interface to Engenio's SMcli.  It is also
-used in the IBM DS storage series.  This release has been tested with
-SMcli version 10.75.G6.16 on GNU/Linux - it will probably work on any
+used in the Dell Powervault MD storage series.  This release has been tested with
+SMcli version 10.80.G6.47 on GNU/Linux - it will probably work on any
 Unix system (and maybe windows), but some functions probably won't
 work with other versions of Santricity due to syntax changes. It
 currently offers a fairly small number of commands, which may be
@@ -660,16 +662,19 @@ new(subsystem => 'SUBSYSTEMNAME', OPTIONS)
 
 =head2 METHODS
 
-    healthStatus 
+    healthStatus
     reportStatus
-    showLogicalDrive 
-    showAllLogicalDrives 
-    createLogicalDrive 
-    deleteLogicalDrive 
-    addLogicalDriveMapping 
-    removeLogicalDriveMapping 
-    showLogicalDriveMappings 
-    monitorPerformance 
+    showVirtualDisk
+    showAllVirtualDisks
+    createVirtualDisk
+    deleteVirtualDisk
+    addVirtualDiskMapping
+    removeVirtualDiskMapping
+    showVirtualDiskMappings
+    showController
+    getEvents
+    getConfig
+    monitorPerformance
 
 =head2 EXPORT
 
