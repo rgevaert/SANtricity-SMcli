@@ -1,16 +1,17 @@
 Source: libsantricity-smcli-perl
 Section: perl
 Priority: optional
-Maintainer: Rudy Gevaert <rgevaert@pimp.ugent.be>
+Maintainer: Rudy Gevaert <Rudy.Gevaert@UGent.be>
 Build-Depends: debhelper (>= 8)
 Build-Depends-Indep: perl
 Standards-Version: 3.9.2
 Homepage: http://search.cpan.org/dist/SANtricity-SMcli/
+Vcs-Browser: https://github.com/rgevaert/SANtricity-SMcli
 
 Package: libsantricity-smcli-perl
 Architecture: all
 Depends: ${misc:Depends}, ${perl:Depends}
-Description: unknown
+Description: perl interface to SMcli
  SANtricity::SMcli is a perl interface to Engenio's SMcli. It is also used in
  the Dell Powervault MD storage series. This release has been tested with
  SMcli version 10.80.G6.47 on GNU/Linux - it will probably work on any Unix

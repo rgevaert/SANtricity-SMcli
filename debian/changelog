@@ -1,3 +1,9 @@
+libsantricity-smcli-perl (0.02-2) wheezy; urgency=low
+
+  * Update control file.
+
+ -- Rudy Gevaert <Rudy.Gevaert@UGent.be>  Wed, 21 Nov 2012 17:13:07 +0100
+
 libsantricity-smcli-perl (0.02-1) wheezy; urgency=low
 
   * Initial Release.
