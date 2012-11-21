@@ -1,5 +1,5 @@
-libsantricity-smcli-perl (0.02-1) unstable; urgency=low
+libsantricity-smcli-perl (0.02-1) wheezy; urgency=low
 
   * Initial Release.
 
- -- Rudy Gevaert <rgevaert@pimp.ugent.be>  Wed, 21 Nov 2012 16:33:42 +0100
+ -- Rudy Gevaert <Rudy.Gevaert@UGent.be>  Wed, 21 Nov 2012 16:33:42 +0100
