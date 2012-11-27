@@ -247,7 +247,7 @@ sub addVirtualDiskMapping {
 # Method: removeVirtualDiskMapping
 #                                                        #
 # Remove a logical drive mapping                         #
-# Args: logical drive name, logical unit number, host    #
+# Args: logical drive name, host                         #
 #                                                        #
 # Returns: 1 if add succeeded                            #
 ##########################################################
@@ -269,10 +269,10 @@ sub removeVirtualDiskMapping {
 }
 
 ##########################################################
-# Method: showVirtualDiskMappings                       #
+# Method: showVirtualDiskMappings                        #
 #                                                        #
 # Show logical drive mapping of a host                   #
-# Args: logical drive name, logical unit number, host    #
+# Args: logical drive name, host                         #
 #                                                        #
 # Returns: 1 if add succeeded                            #
 ##########################################################
