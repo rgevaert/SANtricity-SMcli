@@ -269,6 +269,36 @@ sub removeVirtualDiskMapping {
 }
 
 ##########################################################
+# Method: removeVirtualDiskMappings
+#                                                        #
+# Remove a logical drive mappings                        #
+# Args array: VirtualDisk1, VirtualDisk2                 #
+#                                                        #
+# Returns: 1 if add succeeded                            #
+##########################################################
+sub removeVirtualDiskMappings {
+  my $self = shift;
+
+  my @logical_drives = @_; 
+ 
+  my @d = map { "\"$_\"" } @logical_drives;
+
+  print Dumper \@d;
+
+  my $drives = join(" ", map { "$_" } @d );
+
+  my $cmd="remove virtualDisks [$drives] lunMapping";
+
+  my $status = 1;
+  foreach my $line ($self->runCmd("$cmd")) {
+    next if ($line =~ /^$/);
+    $status = 0 if $line =~ /SMcli failed/;
+  }
+  return $status;
+
+}
+
+##########################################################
 # Method: showVirtualDiskMappings                        #
 #                                                        #
 # Show logical drive mapping of a host                   #
@@ -552,6 +582,7 @@ sub runCmd {
   }
 
   $cmd .= "-p $self->{pass} " if ($self->{pass});
+  $cmd .= "-quick ";
   $cmd .= "-c '$smcli_string;'";
 
   print "$cmd\n" if ($self->{debug});
