@@ -1,3 +1,9 @@
+libsantricity-smcli-perl (0.02-3) wheezy; urgency=low
+
+  * Add support for removing multiple mappings.
+
+ -- Rudy Gevaert <Rudy.Gevaert@UGent.be>  Wed, 28 Nov 2012 10:13:07 +0100
+
 libsantricity-smcli-perl (0.02-2) wheezy; urgency=low
 
   * Update control file.
